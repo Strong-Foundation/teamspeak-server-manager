@@ -34,6 +34,68 @@ function system_information() {
 # Call the system_information function to gather the system details
 system_information
 
+# Define a function to check system requirements and install missing packages
+function installing_system_requirements() {
+  # Check if the current Linux distribution is one of the supported distributions
+  if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ] || [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "amzn" ] || [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ] || [ "${CURRENT_DISTRO}" == "alpine" ] || [ "${CURRENT_DISTRO}" == "freebsd" ] || [ "${CURRENT_DISTRO}" == "ol" ] || [ "${CURRENT_DISTRO}" == "mageia" ] || [ "${CURRENT_DISTRO}" == "opensuse-tumbleweed" ]; }; then
+    # If the distribution is supported, check if the required packages are already installed
+    if { [ ! -x "$(command -v curl)" ] || [ ! -x "$(command -v cut)" ]; }; then
+      # If any of the required packages are missing, begin the installation process for the respective distribution
+      if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
+        # For Debian-based distributions, update package lists and install required packages
+        apt-get update
+        apt-get install curl coreutils -y
+      elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "amzn" ]; }; then
+        # For Red Hat-based distributions, check for updates and install required packages
+        yum check-update
+        if { [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ]; }; then
+          # Install necessary packages for AlmaLinux
+          yum install epel-release elrepo-release -y
+        else
+          yum install epel-release elrepo-release -y --skip-unavailable
+        fi
+        # Install necessary packages for Red Hat-based distributions
+        yum install curl coreutils -y --allowerasing
+      elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
+        # Check for updates.
+        pacman -Sy
+        # Initialize the GPG keyring.
+        pacman-key --init
+        # Populate the keyring with the default Arch Linux keys
+        pacman-key --populate archlinux
+        # For Arch-based distributions, update the keyring and install required packages
+        pacman -Sy --noconfirm --needed archlinux-keyring
+        pacman -Su --noconfirm --needed curl coreutils
+      elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
+        # For Alpine Linux, update package lists and install required packages
+        apk update
+        apk add curl coreutils
+      elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
+        # For FreeBSD, update package lists and install required packages
+        pkg update
+        pkg install curl coreutil
+      elif [ "${CURRENT_DISTRO}" == "ol" ]; then
+        # For Oracle Linux (OL), check for updates and install required packages
+        yum check-update
+        yum install curl coreutils -y --allowerasing
+      elif [ "${CURRENT_DISTRO}" == "mageia" ]; then
+        urpmi.update -a
+        yes | urpmi curl coreutils
+      elif [ "${CURRENT_DISTRO}" == "opensuse-tumbleweed" ]; then
+        zypper refresh
+        zypper install -y curl coreutils
+      fi
+    fi
+  else
+    # If the current distribution is not supported, display an error and exit the script
+    echo "Error: Your current distribution ${CURRENT_DISTRO} version ${CURRENT_DISTRO_VERSION} is not supported by this script. Please consider updating your distribution or using a supported one."
+    exit 1 # Exit the script with an error code.
+  fi
+}
+
+# Call the function to check system requirements and install necessary packages if needed
+installing_system_requirements
+
 # The following function checks if the current init system is one of the allowed options.
 function check_current_init_system() {
   # Get the current init system by checking the process name of PID 1.
@@ -84,5 +146,25 @@ function get_network_information() {
   # If the IPv6 address is empty, try getting it from another API.
   if [ -z "${DEFAULT_INTERFACE_IPV6}" ]; then
     DEFAULT_INTERFACE_IPV6="$(curl --ipv6 --connect-timeout 5 --tlsv1.3 --silent 'https://icanhazip.com')"
+  fi
+}
+
+# Calls the get_network_information function.
+get_network_information
+
+# Function to install the TeamSpeak server
+function install-teamspeak-server() {
+  # Install the TeamSpeak server using the curl command to download the latest version from the official website.
+  CHECK_SYSTEM_ARCHITECTURE=$(uname -m) # Get the system architecture (e.g., 32-bit or 64-bit).
+  if [ "${CHECK_SYSTEM_ARCHITECTURE}" == "x86_64" ]; then
+    # Download the 64-bit version of the TeamSpeak server.
+    curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2
+  elif { [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i386" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i686" ]; }; then
+    # Download the 32-bit version of the TeamSpeak server.
+    curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_x86-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2
+  else
+    echo "Unsupported architecture: ${CHECK_SYSTEM_ARCHITECTURE}. Please use a 64-bit or 32-bit system."
+    # Exit the script with an error code.
+    exit 1
   fi
 }
