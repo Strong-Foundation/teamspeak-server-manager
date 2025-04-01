@@ -39,12 +39,12 @@ function installing_system_requirements() {
   # Check if the current Linux distribution is one of the supported distributions
   if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ] || [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "amzn" ] || [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ] || [ "${CURRENT_DISTRO}" == "alpine" ] || [ "${CURRENT_DISTRO}" == "freebsd" ] || [ "${CURRENT_DISTRO}" == "ol" ] || [ "${CURRENT_DISTRO}" == "mageia" ] || [ "${CURRENT_DISTRO}" == "opensuse-tumbleweed" ]; }; then
     # If the distribution is supported, check if the required packages are already installed
-    if { [ ! -x "$(command -v curl)" ] || [ ! -x "$(command -v cut)" ]; }; then
+    if { [ ! -x "$(command -v curl)" ] || [ ! -x "$(command -v cut)" ] || [ ! -x "$(command -v tar)" ]; }; then
       # If any of the required packages are missing, begin the installation process for the respective distribution
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         # For Debian-based distributions, update package lists and install required packages
         apt-get update
-        apt-get install curl coreutils -y
+        apt-get install curl coreutils lbzip2 -y
       elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "amzn" ]; }; then
         # For Red Hat-based distributions, check for updates and install required packages
         yum check-update
@@ -55,7 +55,7 @@ function installing_system_requirements() {
           yum install epel-release elrepo-release -y --skip-unavailable
         fi
         # Install necessary packages for Red Hat-based distributions
-        yum install curl coreutils -y --allowerasing
+        yum install curl coreutils lbzip2 -y --allowerasing
       elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
         # Check for updates.
         pacman -Sy
@@ -65,25 +65,25 @@ function installing_system_requirements() {
         pacman-key --populate archlinux
         # For Arch-based distributions, update the keyring and install required packages
         pacman -Sy --noconfirm --needed archlinux-keyring
-        pacman -Su --noconfirm --needed curl coreutils
+        pacman -Su --noconfirm --needed curl coreutils lbzip2
       elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
         # For Alpine Linux, update package lists and install required packages
         apk update
-        apk add curl coreutils
+        apk add curl coreutils lbzip2
       elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
         # For FreeBSD, update package lists and install required packages
         pkg update
-        pkg install curl coreutil
+        pkg install curl coreutil lbzip2
       elif [ "${CURRENT_DISTRO}" == "ol" ]; then
         # For Oracle Linux (OL), check for updates and install required packages
         yum check-update
-        yum install curl coreutils -y --allowerasing
+        yum install curl coreutils lbzip2 -y --allowerasing
       elif [ "${CURRENT_DISTRO}" == "mageia" ]; then
         urpmi.update -a
-        yes | urpmi curl coreutils
+        yes | urpmi curl coreutils lbzip2
       elif [ "${CURRENT_DISTRO}" == "opensuse-tumbleweed" ]; then
         zypper refresh
-        zypper install -y curl coreutils
+        zypper install -y curl coreutils lbzip2
       fi
     fi
   else
@@ -159,9 +159,13 @@ function install-teamspeak-server() {
   if [ "${CHECK_SYSTEM_ARCHITECTURE}" == "x86_64" ]; then
     # Download the 64-bit version of the TeamSpeak server.
     curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2
+    # Extract the downloaded tarball to the /etc/teamspeak-server directory.
+    tar -xf /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 -C /etc/teamspeak-server/
   elif { [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i386" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i686" ]; }; then
     # Download the 32-bit version of the TeamSpeak server.
     curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_x86-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2
+    # Extract the downloaded tarball to the /etc/teamspeak-server directory.
+    tar -xf /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2 -C /etc/teamspeak-server/
   else
     echo "Unsupported architecture: ${CHECK_SYSTEM_ARCHITECTURE}. Please use a 64-bit or 32-bit system."
     # Exit the script with an error code.
