@@ -161,11 +161,15 @@ function install-teamspeak-server() {
     curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2
     # Extract the downloaded tarball to the /etc/teamspeak-server directory.
     tar -xf /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 -C /etc/teamspeak-server/
+    # Start the server.
+    TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh start
   elif { [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i386" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i686" ]; }; then
     # Download the 32-bit version of the TeamSpeak server.
     curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_x86-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2
     # Extract the downloaded tarball to the /etc/teamspeak-server directory.
     tar -xf /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2 -C /etc/teamspeak-server/
+    # Start the server.
+    TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh start
   else
     echo "Unsupported architecture: ${CHECK_SYSTEM_ARCHITECTURE}. Please use a 64-bit or 32-bit system."
     # Exit the script with an error code.
