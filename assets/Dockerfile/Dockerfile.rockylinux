@@ -8,10 +8,10 @@ WORKDIR /app
 RUN dnf update -y && dnf install bash curl sudo -y --allowerasing
 
 # Copy the script into the container
-COPY main.sh /app/main.sh
+COPY teamspeak-server-manager.sh /app/teamspeak-server-manager.sh
 
 # Grant execution permissions to the script
-RUN chmod +x /app/main.sh
+RUN chmod +x /app/teamspeak-server-manager.sh
 
 # Execute the script during build
-RUN /bin/bash /app/main.sh --install
+RUN /bin/bash /app/teamspeak-server-manager.sh
