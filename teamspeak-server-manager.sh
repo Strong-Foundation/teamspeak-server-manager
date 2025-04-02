@@ -28,6 +28,8 @@ function system_information() {
     # Extract the major version of the system by splitting the version string at the dot (.) and keeping the first field
     # For example, for '20.04', it will set CURRENT_DISTRO_MAJOR_VERSION to '20'
     CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut -d"." -f1)
+    # Set the CURRENT_SYSTEM_ARCHITECTURE variable to the system's architecture (e.g., 'x86_64', 'arm64')
+    CURRENT_SYSTEM_ARCHITECTURE=$(uname -m)
   fi
 }
 
@@ -95,6 +97,21 @@ function installing_system_requirements() {
 
 # Call the function to check system requirements and install necessary packages if needed
 installing_system_requirements
+
+# The following function checks if the system architecture is supported.
+function check_current_system_architecture() {
+  # The list of allowed system architectures (case-insensitive).
+  ALLOWED_SYSTEM_ARCHITECTURES=("x86_64" "amd64" "aarch64" "arm64" "powerpc64" "ppc64le" "s390x" "riscv64" "mips64" "sparc64" "i386" "i686" "armv7l" "armv6l" "mips" "mipsel" "ppc" "sparc" "riscv32")
+  # Check if the current system architecture is in the list of allowed architectures
+  if [[ ! "${ALLOWED_SYSTEM_ARCHITECTURES[*]}" =~ ${CURRENT_SYSTEM_ARCHITECTURE} ]]; then
+    # If the system architecture is not allowed, display an error message and exit with an error code.
+    echo "Error: The '${CURRENT_SYSTEM_ARCHITECTURE}' architecture is not supported. Please stay tuned for future updates."
+    exit 1 # Exit the script with an error code.
+  fi
+}
+
+# The function check if the current system architecture is one of the allowed options.
+check_current_system_architecture
 
 # The following function checks if the current init system is one of the allowed options.
 function check_current_init_system() {
@@ -176,15 +193,14 @@ if [ ! -d "${TEAMSPEAK_SERVER_DIR}" ]; then
   # Function to install the TeamSpeak server
   function install-teamspeak-server() {
     # Install the TeamSpeak server using the curl command to download the latest version from the official website.
-    CHECK_SYSTEM_ARCHITECTURE=$(uname -m) # Get the system architecture (e.g., 32-bit or 64-bit).
-    if { [ "${CHECK_SYSTEM_ARCHITECTURE}" == "x86_64" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "amd64" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "aarch64" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "arm64" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "powerpc64" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "ppc64le" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "s390x" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "riscv64" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "mips64" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "sparc64" ]; }; then
+    if { [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "x86_64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "amd64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "aarch64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "arm64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "powerpc64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "ppc64le" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "s390x" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "riscv64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "mips64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "sparc64" ]; }; then
       # Download the 64-bit version of the TeamSpeak server.
       curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2
       # Extract the downloaded tarball to the /etc/teamspeak-server directory.
       tar -xf /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 -C /etc/teamspeak-server/
       # Start the server.
       TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh start
-    elif { [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i386" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i686" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "armv7l" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "armv6l" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "mips" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "mipsel" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "ppc" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "sparc" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "riscv32" ]; }; then
+    elif { [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "i386" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "i686" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "armv7l" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "armv6l" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "mips" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "mipsel" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "ppc" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "sparc" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "riscv32" ]; }; then
       # Download the 32-bit version of the TeamSpeak server.
       curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_x86-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2
       # Extract the downloaded tarball to the /etc/teamspeak-server directory.
@@ -192,7 +208,7 @@ if [ ! -d "${TEAMSPEAK_SERVER_DIR}" ]; then
       # Start the server.
       TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh start
     else
-      echo "Unsupported architecture: ${CHECK_SYSTEM_ARCHITECTURE}. Please use a 64-bit or 32-bit system."
+      echo "Unsupported architecture: ${CURRENT_SYSTEM_ARCHITECTURE}. Please use a 64-bit or 32-bit system."
       # Exit the script with an error code.
       exit 1
     fi
