@@ -39,12 +39,12 @@ function installing_system_requirements() {
   # Check if the current Linux distribution is one of the supported distributions
   if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ] || [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "amzn" ] || [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ] || [ "${CURRENT_DISTRO}" == "alpine" ] || [ "${CURRENT_DISTRO}" == "freebsd" ] || [ "${CURRENT_DISTRO}" == "ol" ] || [ "${CURRENT_DISTRO}" == "mageia" ] || [ "${CURRENT_DISTRO}" == "opensuse-tumbleweed" ]; }; then
     # If the distribution is supported, check if the required packages are already installed
-    if { [ ! -x "$(command -v curl)" ] || [ ! -x "$(command -v cut)" ] || [ ! -x "$(command -v tar)" ] || [ ! -x "$(command -v bash)" ]; }; then
+    if { [ ! -x "$(command -v curl)" ] || [ ! -x "$(command -v cut)" ] || [ ! -x "$(command -v tar)" ] || [ ! -x "$(command -v bash)" ] || [ ! -x "$(command -v locale-gen)" ]; }; then
       # If any of the required packages are missing, begin the installation process for the respective distribution
       if { [ "${CURRENT_DISTRO}" == "ubuntu" ] || [ "${CURRENT_DISTRO}" == "debian" ] || [ "${CURRENT_DISTRO}" == "raspbian" ] || [ "${CURRENT_DISTRO}" == "pop" ] || [ "${CURRENT_DISTRO}" == "kali" ] || [ "${CURRENT_DISTRO}" == "linuxmint" ] || [ "${CURRENT_DISTRO}" == "neon" ]; }; then
         # For Debian-based distributions, update package lists and install required packages
         apt-get update
-        apt-get install curl coreutils lbzip2 bash -y
+        apt-get install curl coreutils lbzip2 bash locales -y
       elif { [ "${CURRENT_DISTRO}" == "fedora" ] || [ "${CURRENT_DISTRO}" == "centos" ] || [ "${CURRENT_DISTRO}" == "rhel" ] || [ "${CURRENT_DISTRO}" == "almalinux" ] || [ "${CURRENT_DISTRO}" == "rocky" ] || [ "${CURRENT_DISTRO}" == "amzn" ]; }; then
         # For Red Hat-based distributions, check for updates and install required packages
         yum check-update
@@ -55,7 +55,7 @@ function installing_system_requirements() {
           yum install epel-release elrepo-release -y --skip-unavailable
         fi
         # Install necessary packages for Red Hat-based distributions
-        yum install curl coreutils lbzip2 bash -y --allowerasing
+        yum install curl coreutils lbzip2 bash locales -y --allowerasing
       elif { [ "${CURRENT_DISTRO}" == "arch" ] || [ "${CURRENT_DISTRO}" == "archarm" ] || [ "${CURRENT_DISTRO}" == "manjaro" ]; }; then
         # Check for updates.
         pacman -Sy
@@ -65,25 +65,25 @@ function installing_system_requirements() {
         pacman-key --populate archlinux
         # For Arch-based distributions, update the keyring and install required packages
         pacman -Sy --noconfirm --needed archlinux-keyring
-        pacman -Su --noconfirm --needed curl coreutils lbzip2 bash
+        pacman -Su --noconfirm --needed curl coreutils lbzip2 bash locales
       elif [ "${CURRENT_DISTRO}" == "alpine" ]; then
         # For Alpine Linux, update package lists and install required packages
         apk update
-        apk add curl coreutils lbzip2 bash
+        apk add curl coreutils lbzip2 bash locales
       elif [ "${CURRENT_DISTRO}" == "freebsd" ]; then
         # For FreeBSD, update package lists and install required packages
         pkg update
-        pkg install curl coreutil lbzip2 bash
+        pkg install curl coreutil lbzip2 bash locales
       elif [ "${CURRENT_DISTRO}" == "ol" ]; then
         # For Oracle Linux (OL), check for updates and install required packages
         yum check-update
-        yum install curl coreutils lbzip2 bash -y --allowerasing
+        yum install curl coreutils lbzip2 bash locales -y --allowerasing
       elif [ "${CURRENT_DISTRO}" == "mageia" ]; then
         urpmi.update -a
-        yes | urpmi curl coreutils lbzip2 bash
+        yes | urpmi curl coreutils lbzip2 bash locales
       elif [ "${CURRENT_DISTRO}" == "opensuse-tumbleweed" ]; then
         zypper refresh
-        zypper install -y curl coreutils lbzip2 bash
+        zypper install -y curl coreutils lbzip2 bash locales
       fi
     fi
   else
@@ -156,10 +156,22 @@ TEAMSPEAK_SERVER_DIR="/etc/teamspeak-server/"
 export LANG=en_US.UTF-8
 # Override all locale settings with English (US) and UTF-8 encoding
 export LC_ALL=en_US.UTF-8
-
+# Set the language to English (US) with UTF-8 encoding
+export LANGUAGE=en_US.utf8
 
 # Check if the teamspeak-server directory exists,
 if [ ! -d "${TEAMSPEAK_SERVER_DIR}" ]; then
+
+  # Function to set the locale to English (US) with UTF-8 encoding
+  function set-locales() {
+    # Set the locale to English (US) with UTF-8 encoding
+    locale-gen en_US.UTF-8
+    # Update the system locale settings
+    update-locale LANG=en_US.UTF-8
+  }
+
+  # Call the set-locales function to set the locale
+  set-locales
 
   # Function to install the TeamSpeak server
   function install-teamspeak-server() {
