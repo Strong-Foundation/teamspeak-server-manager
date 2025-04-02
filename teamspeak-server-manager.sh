@@ -150,7 +150,13 @@ function get_network_information() {
 }
 
 # Global Variables
+# Sets the base directory for TeamSpeak server files
 TEAMSPEAK_SERVER_DIR="/etc/teamspeak-server/"
+# Set the default locale to English (US) with UTF-8 encoding
+export LANG=en_US.UTF-8
+# Override all locale settings with English (US) and UTF-8 encoding
+export LC_ALL=en_US.UTF-8
+
 
 # Check if the teamspeak-server directory exists,
 if [ ! -d "${TEAMSPEAK_SERVER_DIR}" ]; then
