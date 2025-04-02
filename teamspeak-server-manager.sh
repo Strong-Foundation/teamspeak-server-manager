@@ -195,24 +195,28 @@ else
   function display_teamspeak_status() {
     echo "Displaying TeamSpeak server status..."
     # Add commands to check server status here
+    TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh status
   }
 
   # Function to start the TeamSpeak server
   function start_teamspeak_server() {
     echo "Starting TeamSpeak server..."
     # Add commands to start the server here
+    TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh start
   }
 
   # Function to stop the TeamSpeak server
   function stop_teamspeak_server() {
     echo "Stopping TeamSpeak server..."
     # Add commands to stop the server here
+    TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh stop
   }
 
   # Function to restart the TeamSpeak server
   function restart_teamspeak_server() {
     echo "Restarting TeamSpeak server..."
     # Add commands to restart the server here
+    TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh restart
   }
 
   # Function to add a new TeamSpeak user
