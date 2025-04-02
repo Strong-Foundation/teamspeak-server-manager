@@ -25,9 +25,6 @@ function system_information() {
     CURRENT_DISTRO=${ID}
     # Set the CURRENT_DISTRO_VERSION variable to the system's version ID (e.g., '20.04' for Ubuntu 20.04)
     CURRENT_DISTRO_VERSION=${VERSION_ID}
-    # Extract the major version of the system by splitting the version string at the dot (.) and keeping the first field
-    # For example, for '20.04', it will set CURRENT_DISTRO_MAJOR_VERSION to '20'
-    CURRENT_DISTRO_MAJOR_VERSION=$(echo "${CURRENT_DISTRO_VERSION}" | cut -d"." -f1)
     # Set the CURRENT_SYSTEM_ARCHITECTURE variable to the system's architecture (e.g., 'x86_64', 'arm64')
     CURRENT_SYSTEM_ARCHITECTURE=$(uname -m)
   fi
