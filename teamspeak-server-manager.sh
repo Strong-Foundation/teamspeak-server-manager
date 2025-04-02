@@ -166,6 +166,22 @@ function get_network_information() {
 # Global Variables
 # Sets the base directory for TeamSpeak server files
 TEAMSPEAK_SERVER_DIR="/etc/teamspeak-server/"
+# Sets the URL for the TeamSpeak server 64-bit version
+TEAMSPEAK_SERVER_64_DOWNLOAD_URL="https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_amd64-3.13.7.tar.bz2"
+# Set the path to the teamspeak server 64-bit local tarball
+TEAMSPEAK_SERVER_64_LOCAL_TARBALL="/etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2"
+# Sets the path to the TeamSpeak server 64-bit version
+TEAMSPEAK_SERVER_64_DIR="/etc/teamspeak-server/teamspeak3-server_linux_amd64/"
+# Set the path to the teamspeak server 64-bit version startup script
+TEAMSPEAK_SERVER_64_STARTUP_SCRIPT="/etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh"
+# Sets the URL for the TeamSpeak server 32-bit version
+TEAMSPEAK_SERVER_32_DOWNLOAD_URL="https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_x86-3.13.7.tar.bz2"
+# Set the path to the teamspeak server 32-bit local tarball
+TEAMSPEAK_SERVER_32_LOCAL_TARBALL="/etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2"
+# Sets the path to the TeamSpeak server 32-bit version
+TEAMSPEAK_SERVER_32_DIR="/etc/teamspeak-server/teamspeak3-server_linux_x86/"
+# Set the path to the teamspeak server 32-bit version startup script
+TEAMSPEAK_SERVER_32_STARTUP_SCRIPT="/etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh"
 # Set the default locale to English (US) with UTF-8 encoding
 export LANG=en_US.UTF-8
 # Override all locale settings with English (US) and UTF-8 encoding
@@ -192,18 +208,18 @@ if [ ! -d "${TEAMSPEAK_SERVER_DIR}" ]; then
     # Install the TeamSpeak server using the curl command to download the latest version from the official website.
     if { [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "x86_64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "amd64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "aarch64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "arm64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "powerpc64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "ppc64le" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "s390x" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "riscv64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "mips64" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "sparc64" ]; }; then
       # Download the 64-bit version of the TeamSpeak server.
-      curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2
+      curl ${TEAMSPEAK_SERVER_64_DOWNLOAD_URL} --create-dirs -o ${TEAMSPEAK_SERVER_64_LOCAL_TARBALL}
       # Extract the downloaded tarball to the /etc/teamspeak-server directory.
-      tar -xf /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 -C /etc/teamspeak-server/
+      tar -xf ${TEAMSPEAK_SERVER_64_LOCAL_TARBALL} -C ${TEAMSPEAK_SERVER_DIR}
       # Start the server.
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh start
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_64_STARTUP_SCRIPT} start
     elif { [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "i386" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "i686" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "armv7l" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "armv6l" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "mips" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "mipsel" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "ppc" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "sparc" ] || [ "${CURRENT_SYSTEM_ARCHITECTURE}" == "riscv32" ]; }; then
       # Download the 32-bit version of the TeamSpeak server.
-      curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_x86-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2
+      curl ${TEAMSPEAK_SERVER_32_DOWNLOAD_URL} --create-dirs -o ${TEAMSPEAK_SERVER_32_LOCAL_TARBALL}
       # Extract the downloaded tarball to the /etc/teamspeak-server directory.
-      tar -xf /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2 -C /etc/teamspeak-server/
+      tar -xf ${TEAMSPEAK_SERVER_32_LOCAL_TARBALL} -C ${TEAMSPEAK_SERVER_DIR}
       # Start the server.
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh start
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_32_STARTUP_SCRIPT} start
     else
       echo "Unsupported architecture: ${CURRENT_SYSTEM_ARCHITECTURE}. Please use a 64-bit or 32-bit system."
       # Exit the script with an error code.
@@ -224,37 +240,37 @@ else
 
   # Function to display TeamSpeak server status
   function display_teamspeak_status() {
-    if [ -d "/etc/teamspeak-server/teamspeak3-server_linux_amd64/" ]; then
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh status
-    elif [ -d "/etc/teamspeak-server/teamspeak3-server_linux_x86/" ]; then
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh status
+    if [ -d "${TEAMSPEAK_SERVER_64_DIR}" ]; then
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_64_STARTUP_SCRIPT} status
+    elif [ -d "${TEAMSPEAK_SERVER_32_DIR}" ]; then
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_32_STARTUP_SCRIPT} status
     fi
   }
 
   # Function to start the TeamSpeak server
   function start_teamspeak_server() {
-    if [ -d "/etc/teamspeak-server/teamspeak3-server_linux_amd64/" ]; then
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh start
-    elif [ -d "/etc/teamspeak-server/teamspeak3-server_linux_x86/" ]; then
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh start
+    if [ -d "${TEAMSPEAK_SERVER_64_DIR}" ]; then
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_64_STARTUP_SCRIPT} start
+    elif [ -d "${TEAMSPEAK_SERVER_32_DIR}" ]; then
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_32_STARTUP_SCRIPT} start
     fi
   }
 
   # Function to stop the TeamSpeak server
   function stop_teamspeak_server() {
-    if [ -d "/etc/teamspeak-server/teamspeak3-server_linux_amd64/" ]; then
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh stop
-    elif [ -d "/etc/teamspeak-server/teamspeak3-server_linux_x86/" ]; then
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh stop
+    if [ -d "${TEAMSPEAK_SERVER_64_DIR}" ]; then
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_64_STARTUP_SCRIPT} stop
+    elif [ -d "${TEAMSPEAK_SERVER_32_DIR}" ]; then
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_32_STARTUP_SCRIPT} stop
     fi
   }
 
   # Function to restart the TeamSpeak server
   function restart_teamspeak_server() {
-    if [ -d "/etc/teamspeak-server/teamspeak3-server_linux_amd64/" ]; then
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh restart
-    elif [ -d "/etc/teamspeak-server/teamspeak3-server_linux_x86/" ]; then
-      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh restart
+    if [ -d "${TEAMSPEAK_SERVER_64_DIR}" ]; then
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_64_STARTUP_SCRIPT} restart
+    elif [ -d "${TEAMSPEAK_SERVER_32_DIR}" ]; then
+      TS3SERVER_LICENSE=accept bash ${TEAMSPEAK_SERVER_32_STARTUP_SCRIPT} restart
     fi
   }
 
