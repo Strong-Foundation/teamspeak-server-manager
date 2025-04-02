@@ -149,30 +149,177 @@ function get_network_information() {
   fi
 }
 
-# Calls the get_network_information function.
-get_network_information
+# Global Variables
+TEAMSPEAK_SERVER_DIR="/etc/teamspeak-server/"
 
-# Function to install the TeamSpeak server
-function install-teamspeak-server() {
-  # Install the TeamSpeak server using the curl command to download the latest version from the official website.
-  CHECK_SYSTEM_ARCHITECTURE=$(uname -m) # Get the system architecture (e.g., 32-bit or 64-bit).
-  if [ "${CHECK_SYSTEM_ARCHITECTURE}" == "x86_64" ]; then
-    # Download the 64-bit version of the TeamSpeak server.
-    curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2
-    # Extract the downloaded tarball to the /etc/teamspeak-server directory.
-    tar -xf /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 -C /etc/teamspeak-server/
-    # Start the server.
-    TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh start
-  elif { [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i386" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i686" ]; }; then
-    # Download the 32-bit version of the TeamSpeak server.
-    curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_x86-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2
-    # Extract the downloaded tarball to the /etc/teamspeak-server directory.
-    tar -xf /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2 -C /etc/teamspeak-server/
-    # Start the server.
-    TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh start
-  else
-    echo "Unsupported architecture: ${CHECK_SYSTEM_ARCHITECTURE}. Please use a 64-bit or 32-bit system."
-    # Exit the script with an error code.
-    exit 1
-  fi
-}
+# Check if the teamspeak-server directory exists,
+if [ ! -d "${TEAMSPEAK_SERVER_DIR}" ]; then
+
+  # Function to install the TeamSpeak server
+  function install-teamspeak-server() {
+    # Install the TeamSpeak server using the curl command to download the latest version from the official website.
+    CHECK_SYSTEM_ARCHITECTURE=$(uname -m) # Get the system architecture (e.g., 32-bit or 64-bit).
+    if [ "${CHECK_SYSTEM_ARCHITECTURE}" == "x86_64" ]; then
+      # Download the 64-bit version of the TeamSpeak server.
+      curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2
+      # Extract the downloaded tarball to the /etc/teamspeak-server directory.
+      tar -xf /etc/teamspeak-server/teamspeak3-server_linux_amd64-3.13.7.tar.bz2 -C /etc/teamspeak-server/
+      # Start the server.
+      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_amd64/ts3server_startscript.sh start
+    elif { [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i386" ] || [ "${CHECK_SYSTEM_ARCHITECTURE}" == "i686" ]; }; then
+      # Download the 32-bit version of the TeamSpeak server.
+      curl https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_x86-3.13.7.tar.bz2 --create-dirs -o /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2
+      # Extract the downloaded tarball to the /etc/teamspeak-server directory.
+      tar -xf /etc/teamspeak-server/teamspeak3-server_linux_x86-3.13.7.tar.bz2 -C /etc/teamspeak-server/
+      # Start the server.
+      TS3SERVER_LICENSE=accept bash /etc/teamspeak-server/teamspeak3-server_linux_x86/ts3server_startscript.sh start
+    else
+      echo "Unsupported architecture: ${CHECK_SYSTEM_ARCHITECTURE}. Please use a 64-bit or 32-bit system."
+      # Exit the script with an error code.
+      exit 1
+    fi
+  }
+
+  # Call the install-teamspeak-server function to install the TeamSpeak server.
+  install-teamspeak-server
+
+else
+
+  # Function to exit the script
+  function exit_script() {
+    echo "Exiting the script..."
+    exit 0
+  }
+
+  # Function to display TeamSpeak server status
+  function display_teamspeak_status() {
+    echo "Displaying TeamSpeak server status..."
+    # Add commands to check server status here
+  }
+
+  # Function to start the TeamSpeak server
+  function start_teamspeak_server() {
+    echo "Starting TeamSpeak server..."
+    # Add commands to start the server here
+  }
+
+  # Function to stop the TeamSpeak server
+  function stop_teamspeak_server() {
+    echo "Stopping TeamSpeak server..."
+    # Add commands to stop the server here
+  }
+
+  # Function to restart the TeamSpeak server
+  function restart_teamspeak_server() {
+    echo "Restarting TeamSpeak server..."
+    # Add commands to restart the server here
+  }
+
+  # Function to add a new TeamSpeak user
+  function add_teamspeak_user() {
+    read -rp "Enter the username: " username
+    read -rp "Enter the password: " password
+    echo "Adding new user: $username"
+    # Add commands to create a new user here
+  }
+
+  # Function to remove a TeamSpeak user
+  function remove_teamspeak_user() {
+    read -rp "Enter the username to remove: " username
+    echo "Removing user: $username"
+    # Add commands to remove a user here
+  }
+
+  # Function to list all TeamSpeak users
+  function list_teamspeak_users() {
+    echo "Listing all TeamSpeak users..."
+    # Add commands to list users here
+  }
+
+  # Function to update the TeamSpeak server configuration
+  function update_teamspeak_config() {
+    echo "Updating TeamSpeak server configuration..."
+    # Add commands to update configuration here
+  }
+
+  # Function to backup the TeamSpeak server configuration
+  function backup_teamspeak_config() {
+    echo "Backing up TeamSpeak server configuration..."
+    # Add commands to backup configuration here
+  }
+
+  # Function to restore the TeamSpeak server configuration
+  function restore_teamspeak_config() {
+    echo "Restoring TeamSpeak server configuration..."
+    # Add commands to restore configuration here
+  }
+
+  # Function to display the menu and handle user input
+  function teamspeak_next_questions_interface() {
+    echo "Please select an action:"
+    echo "   1) Exit"
+    echo "   2) Display TeamSpeak server status"
+    echo "   3) Start TeamSpeak server"
+    echo "   4) Stop TeamSpeak server"
+    echo "   5) Restart TeamSpeak server"
+    echo "   6) Add a new TeamSpeak user"
+    echo "   7) Remove a TeamSpeak user"
+    echo "   8) List all TeamSpeak users"
+    echo "   9) Update TeamSpeak server configuration"
+    echo "   10) Backup TeamSpeak server configuration"
+    echo "   11) Restore TeamSpeak server configuration"
+    until [[ "${TEAMSPEAK_OPTIONS}" =~ ^[0-9]+$ ]] && [ "${TEAMSPEAK_OPTIONS}" -ge 1 ] && [ "${TEAMSPEAK_OPTIONS}" -le 11 ]; do
+      read -rp "Select an Option [1-11]:" -e -i 0 TEAMSPEAK_OPTIONS
+    done
+    case ${TEAMSPEAK_OPTIONS} in
+    1)
+      # Exit the script
+      exit_script
+      ;;
+    2)
+      # Display TeamSpeak server status
+      display_teamspeak_status
+      ;;
+    3)
+      # Start TeamSpeak server
+      start_teamspeak_server
+      ;;
+    4)
+      # Stop TeamSpeak server
+      stop_teamspeak_server
+      ;;
+    5)
+      # Restart TeamSpeak server
+      restart_teamspeak_server
+      ;;
+    6)
+      # Add a new TeamSpeak user
+      add_teamspeak_user
+      ;;
+    7)
+      # Remove a TeamSpeak user
+      remove_teamspeak_user
+      ;;
+    8)
+      # List all TeamSpeak users
+      list_teamspeak_users
+      ;;
+    9)
+      # Update TeamSpeak server configuration
+      update_teamspeak_config
+      ;;
+    10)
+      # Backup TeamSpeak server configuration
+      backup_teamspeak_config
+      ;;
+    11)
+      # Restore TeamSpeak server configuration
+      restore_teamspeak_config
+      ;;
+    esac
+  }
+
+  # Running the TeamSpeak menu
+  teamspeak_next_questions_interface
+
+fi
