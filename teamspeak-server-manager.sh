@@ -27,6 +27,10 @@ function system_information() {
     CURRENT_DISTRO_VERSION=${VERSION_ID}
     # Set the CURRENT_SYSTEM_ARCHITECTURE variable to the system's architecture (e.g., 'x86_64', 'arm64')
     CURRENT_SYSTEM_ARCHITECTURE=$(uname -m)
+  else
+    # If the /etc/os-release file is not present, show an error message and exit
+    echo "Error: /etc/os-release file not found. Unable to gather system information."
+    exit 1  # Exit the script with a non-zero status to indicate an error
   fi
 }
 
